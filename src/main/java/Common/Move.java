@@ -17,7 +17,7 @@ public class Move {
         return null;
     }
 
-    public static State moveZero(State state, Operator operator) {
+    public static Optional<State> moveZero(State state, Operator operator) {
         Integer step;
         ArrayList<Integer> fifteenPuzzle = new ArrayList<>(state.getFifteenPuzzle());
         zeroPos = findZero(fifteenPuzzle);
@@ -28,6 +28,7 @@ public class Move {
                     Integer temp = fifteenPuzzle.get(zeroPos - step);
                     fifteenPuzzle.set(zeroPos - step, 0);
                     fifteenPuzzle.set(zeroPos, temp);
+                    return Optional.of(getState(state, operator, fifteenPuzzle));
                 }
             }
             case R -> {
@@ -36,6 +37,7 @@ public class Move {
                     Integer temp = fifteenPuzzle.get(zeroPos + step);
                     fifteenPuzzle.set(zeroPos + step, 0);
                     fifteenPuzzle.set(zeroPos, temp);
+                    return Optional.of(getState(state, operator, fifteenPuzzle));
                 }
             }
             case U -> {
@@ -44,6 +46,7 @@ public class Move {
                     Integer temp = fifteenPuzzle.get(zeroPos - step);
                     fifteenPuzzle.set(zeroPos - step, 0);
                     fifteenPuzzle.set(zeroPos, temp);
+                    return Optional.of(getState(state, operator, fifteenPuzzle));
                 }
             }
             case D -> {
@@ -52,9 +55,14 @@ public class Move {
                     Integer temp = fifteenPuzzle.get(zeroPos + step);
                     fifteenPuzzle.set(zeroPos + step, 0);
                     fifteenPuzzle.set(zeroPos, temp);
+                    return Optional.of(getState(state, operator, fifteenPuzzle));
                 }
             }
         }
+        return Optional.empty();
+    }
+
+    private static State getState(State state, Operator operator, ArrayList<Integer> fifteenPuzzle) {
         State newState = new State(fifteenPuzzle);
         newState.setOperator(operator);
         newState.setParent(state);

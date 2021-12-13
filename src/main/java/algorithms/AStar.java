@@ -43,7 +43,7 @@ public class AStar {
     public List<State> getNeighbors(State state) {
         List<State> states = new ArrayList<>();
         Operator.stream().forEach(e -> {
-            states.add(Move.moveZero(state, e));
+                Move.moveZero(state, e).ifPresent(states::add);
         });
         return states;
     }
@@ -88,7 +88,7 @@ public class AStar {
 
             state = stateWithMinValue;
         }
-        System.out.println(state.toString());
+        //System.out.println(state.toString());
         System.out.println(countIteration);
         return true;
     }
