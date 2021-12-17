@@ -66,6 +66,7 @@ public class Move {
         State newState = new State(fifteenPuzzle);
         newState.setOperator(operator);
         newState.setParent(state);
+        newState.setDeep(state.getDeep() + 1);
         return newState;
     }
 }

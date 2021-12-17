@@ -13,9 +13,15 @@ public class AStar {
     private final Integer result;
     private final Integer deep = 0; //glebokosc - ile krokow zostalo wykonane
     private final StateMap stateMap = new StateMap();
+//    private final Map<Integer, List<Integer>> openedMap = new HashMap<>();
+    private final HashSet<Integer> openedSet = new HashSet<>();
+    private final HashSet<Integer> closedSet = new HashSet<>();
+    private final List<State> openedList = new ArrayList<>();
+//    private final SortedSet<State> openedTree = new TreeSet<>();
+    private final List<State> closedList = new ArrayList<>();
+    private int counter;
 
     public AStar() {
-//        ArrayList<Integer> endStatus = new ArrayList<>(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0));
         this.result = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0).hashCode();
     }
 
@@ -23,13 +29,31 @@ public class AStar {
         return deep + heuristic;
     }
 
-    public boolean isEnd(ArrayList<Integer> listToCheck) {
-        // zmienic na porownanie zawartosci listy
-        return listToCheck.hashCode() == result;
+    public boolean isEnd(Map<Integer, List<Integer>> mapToCheck) {
+        for (Map.Entry<Integer, List<Integer>> entry : mapToCheck.entrySet()) {
+            if (entry.getKey() != result) return false;
+            return isListTheSame(entry.getValue());
+        }
+        return false;
+    }
+
+    public boolean isListTheSame(List<Integer> listToCheck) {
+        for (int i = 0; i < listToCheck.size(); i++) {
+            if (listToCheck.get(i) == 0) continue;
+            if (listToCheck.get(i) != i + 1) return false;
+        }
+        return true;
+    }
+
+    public boolean isFinalState(State state){
+        if(state.hashCode() == result){
+            return isListTheSame(state.getFifteenPuzzle());
+        }
+        return false;
     }
 
     // funkcja heurystyczna
-    public int checkValuesAreOnWrongPosition(ArrayList<Integer> list) {
+    public int checkValuesAreOnWrongPosition(List<Integer> list) {
         int wrongPositionValues = 0;
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i) == 0) continue; // jesli 0 to nie sprawdzaj
@@ -43,53 +67,49 @@ public class AStar {
     public List<State> getNeighbors(State state) {
         List<State> states = new ArrayList<>();
         Operator.stream().forEach(e -> {
-                Move.moveZero(state, e).ifPresent(states::add);
+            Move.moveZero(state, e).ifPresent(states::add);
         });
         return states;
     }
 
 
-    public boolean compute(State state) {  //
-        int countIteration = 0;
-
-        // TODO dodac do explored list
-        // TODO zmienic liste rodzicow, zeby mniej miejsca zabieralo
-
-        // jesli stan jest docelowy zakoncz
-        // warunkiem wejscia w liste jest
-        while (!isEnd(state.getFifteenPuzzle())) {
-            countIteration++;
-            // oblicznanie warosci stanu
-//            int wrongPositions = checkValuesAreOnWrongPosition(state.getFifteenPuzzle());
-            stateMap.getOpened().add(state.hashCode()); // stanow otwartych
-
-            //odpytywanie o sasiadow
-            List<State> neighbors = getNeighbors(state);
-
-            // wyliczanie warotsci sasiadow
-            Map<State, Integer> stateWithValues = new HashMap<>();
-            neighbors.forEach(neighbor -> {
-                Integer value = checkValuesAreOnWrongPosition(neighbor.getFifteenPuzzle());
-                stateWithValues.put(neighbor, value);
-            });
-
-            // znalezienie stanu z nanjmniejsza wartoscia
-            int min = stateWithValues.values().stream()
-                    .mapToInt(v -> v)
-                    .min()
-                    .orElseThrow(NoSuchElementException::new);
-            State stateWithMinValue = new State();
-            stateWithValues.forEach((key, value) -> {
-                if (value == min)
-                    stateWithMinValue.setFifteenPuzzle(key.getFifteenPuzzle());
-                stateWithMinValue.setOperator(key.getOperator());
-                stateWithMinValue.setParent(key.getParent());
-            });
-
-            state = stateWithMinValue;
+    public boolean compute(State state) {
+        if (isFinalState(state)) {
+            System.out.println(state);
+            return true;
         }
-        //System.out.println(state.toString());
-        System.out.println(countIteration);
+
+        state.setDeep(0);
+        openedList.add(state);
+        openedSet.add(state.hashCode());
+
+        while (!openedList.isEmpty()) {
+
+            Collections.sort(openedList);
+            State stateFromOpenList = openedList.get(0);
+
+
+            openedList.remove(0);
+            openedSet.remove(stateFromOpenList.hashCode());
+
+            closedList.add(stateFromOpenList);
+            closedSet.add(stateFromOpenList.hashCode());
+
+            List<State> neighbors = getNeighbors(stateFromOpenList);
+
+            for (State neighbor : neighbors) {
+                if (isFinalState(neighbor)) {
+                    System.out.println(neighbor);
+                    return true;
+                }
+                if (openedSet.contains(neighbor.hashCode()) || closedSet.contains(neighbor.hashCode())) {
+                    continue;
+                }
+                openedList.add(neighbor);
+                openedSet.add(neighbor.hashCode());
+            }
+        }
+        System.out.println("Failure");
         return true;
     }
 }

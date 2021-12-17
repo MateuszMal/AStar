@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,4 +36,23 @@ class StateTest {
         assertNotEquals(differentMatrix.hashCode(), state.hashCode());
     }
 
+    @Test
+    void shouldSortListOfStates() {
+        ArrayList<Integer> integers1 = new ArrayList<>(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0, 15));
+        ArrayList<Integer> integers2 = new ArrayList<>(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 0, 14, 15));
+        ArrayList<Integer> integers3 = new ArrayList<>(List.of(2, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 0, 14, 15));
+        ArrayList<Integer> integers4 = new ArrayList<>(List.of(2, 1, 3, 4, 0, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15));
+        State state1 = new State(integers1);
+        State state2 = new State(integers2);
+        State state3 = new State(integers3);
+        State state4 = new State(integers4);
+        List<State> states = new ArrayList<>();
+        states.add(state4);
+        states.add(state3);
+        states.add(state2);
+        states.add(state1);
+
+        Collections.sort(states);
+
+    }
 }

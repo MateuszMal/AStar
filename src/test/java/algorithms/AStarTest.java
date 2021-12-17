@@ -20,9 +20,14 @@ class AStarTest {
 
     @Test
     void shouldBeEnd() {
-        ArrayList<Integer> matrix = new ArrayList<>(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0));
+        ArrayList<Integer> wrightMatrix = new ArrayList<>(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0));
+        ArrayList<Integer> wrongMatrix = new ArrayList<>(List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15));
+        ArrayList<Integer> wrongMatrix2 = new ArrayList<>(List.of(1, 2, 3, 4, 6, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0));
 
-        assertTrue(astar.isEnd(matrix));
+        assertAll(
+                () -> assertTrue(astar.isListTheSame(wrightMatrix)),
+                () -> assertFalse(astar.isListTheSame(wrongMatrix)),
+                () -> assertFalse(astar.isListTheSame(wrongMatrix2)));
     }
 
     @Test
