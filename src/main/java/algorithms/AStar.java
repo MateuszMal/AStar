@@ -1,8 +1,8 @@
 package algorithms;
 
-import Common.ManhattanComparator;
-import Common.Move;
-import Common.HammingComparator;
+import common.ManhattanComparator;
+import common.Move;
+import common.HammingComparator;
 import lombok.Getter;
 import states.Operator;
 import states.State;
