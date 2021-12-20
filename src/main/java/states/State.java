@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
@@ -19,18 +18,39 @@ public class State implements Comparable<State> {
 
     public State(ArrayList<Integer> fifteenPuzzle) {
         this.fifteenPuzzle = fifteenPuzzle;
-        this.wrongPositions = checkValuesAreOnWrongPosition(fifteenPuzzle);
+        this.wrongPositions = checkValuesAreOnWrongPosition();
     }
 
-    private int checkValuesAreOnWrongPosition(List<Integer> list) {
+    private int checkValuesAreOnWrongPosition() {
         int wrongPositionValues = 0;
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i) == 0) continue; // jesli 0 to nie sprawdzaj
-            if (list.get(i) != i + 1) {  // jesli nie na swoim miejscu
+        for (int i = 0; i < fifteenPuzzle.size(); i++) {
+            if (fifteenPuzzle.get(i) == 0) continue; // jesli 0 to nie sprawdzaj
+            if (fifteenPuzzle.get(i) != i + 1) {  // jesli nie na swoim miejscu
                 wrongPositionValues++;
             }
         }
         return wrongPositionValues;
+    }
+
+    public int manhattan() {
+       return checkValuesDistance() + wrongPositions + deep;
+    }
+
+    private int checkValuesDistance() {
+        int distance = 0;
+        for (int i = 0; i < fifteenPuzzle.size(); i++) {
+            if (fifteenPuzzle.get(i) == 0) continue;
+            if (fifteenPuzzle.get(i) != i + 1) {
+                int value = fifteenPuzzle.get(i) - 1;
+                int currentColumn = i % 4;
+                int currentRow = i / 4;
+                int correctColumnPos = value % 4;
+                int correctRowPos = value / 4;
+                distance += (Math.abs(currentColumn - correctColumnPos))
+                        + (Math.abs(currentRow - correctRowPos));
+            }
+        }
+        return distance;
     }
 
     @Override
@@ -39,6 +59,7 @@ public class State implements Comparable<State> {
                 "fifteenPuzzle=" + fifteenPuzzle +
                 ", parent=" + parent +
                 ", operator=" + operator +
+                ", deep=" + deep +
                 '}';
     }
 
@@ -49,12 +70,6 @@ public class State implements Comparable<State> {
 
     @Override
     public int compareTo(State other) {
-        if ((this.wrongPositions + this.deep) > (other.wrongPositions + other.deep)) {
-            return 1;
-        } else if ((this.wrongPositions + this.deep) < (other.wrongPositions + other.deep)) {
-            return -1;
-        } else {
-            return 0;
-        }
+        return Integer.compare(this.wrongPositions + this.deep, other.wrongPositions + other.deep);
     }
 }

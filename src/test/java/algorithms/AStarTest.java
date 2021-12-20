@@ -30,16 +30,16 @@ class AStarTest {
                 () -> assertFalse(astar.isListTheSame(wrongMatrix2)));
     }
 
-    @Test
-    void shouldReturnAmountOfWrongNumbersPositions() {
-        ArrayList<Integer> matrix = new ArrayList<>(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0, 15));
-        ArrayList<Integer> matrix1 = new ArrayList<>(List.of(2, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0, 15));
-        ArrayList<Integer> matrix2 = new ArrayList<>(List.of(2, 1, 4, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0, 15));
-
-        assertEquals(1, astar.checkValuesAreOnWrongPosition(matrix));
-        assertEquals(3, astar.checkValuesAreOnWrongPosition(matrix1));
-        assertEquals(5, astar.checkValuesAreOnWrongPosition(matrix2));
-    }
+//    @Test
+//    void shouldReturnAmountOfWrongNumbersPositions() {
+//        ArrayList<Integer> matrix = new ArrayList<>(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0, 15));
+//        ArrayList<Integer> matrix1 = new ArrayList<>(List.of(2, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0, 15));
+//        ArrayList<Integer> matrix2 = new ArrayList<>(List.of(2, 1, 4, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0, 15));
+//
+//        assertEquals(1, astar.checkValuesAreOnWrongPosition(matrix));
+//        assertEquals(3, astar.checkValuesAreOnWrongPosition(matrix1));
+//        assertEquals(5, astar.checkValuesAreOnWrongPosition(matrix2));
+//    }
 
     @Test
     void shouldFindNeighbors() {
@@ -60,14 +60,14 @@ class AStarTest {
         State state = new State(new ArrayList<>(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0)));
         State wrongState = new State(new ArrayList<>(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0, 15)));
 
-        assertTrue(astar.compute(state));
-        assertFalse(astar.compute(wrongState));
+        assertTrue(astar.compute(state, "hamm"));
+        assertFalse(astar.compute(wrongState, "manh"));
     }
 
     @Test
     void shouldFindResult() {
         State state = new State(new ArrayList<>(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 0, 14, 15)));
 
-        astar.compute(state);
+        astar.compute(state, "manh");
     }
 }

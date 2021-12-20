@@ -1,10 +1,11 @@
 package algorithms;
 
+import Common.ManhattanComparator;
 import Common.Move;
+import Common.HammingComparator;
 import lombok.Getter;
 import states.Operator;
 import states.State;
-import states.StateMap;
 
 import java.util.*;
 
@@ -12,27 +13,18 @@ import java.util.*;
 public class AStar {
     private final Integer result;
     private final Integer deep = 0; //glebokosc - ile krokow zostalo wykonane
-    private final StateMap stateMap = new StateMap();
-//    private final Map<Integer, List<Integer>> openedMap = new HashMap<>();
-    private final HashSet<Integer> openedSet = new HashSet<>();
-    private final HashSet<Integer> closedSet = new HashSet<>();
+    private final Set<State> openedSet = new HashSet<>();
+    private final Set<State> closedSet = new HashSet<>();
     private final List<State> openedList = new ArrayList<>();
-//    private final SortedSet<State> openedTree = new TreeSet<>();
-    private final List<State> closedList = new ArrayList<>();
-    private int counter;
 
     public AStar() {
         this.result = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0).hashCode();
     }
 
-    public Integer estimate(Integer deep, Integer heuristic) {
-        return deep + heuristic;
-    }
 
-    public boolean isEnd(Map<Integer, List<Integer>> mapToCheck) {
-        for (Map.Entry<Integer, List<Integer>> entry : mapToCheck.entrySet()) {
-            if (entry.getKey() != result) return false;
-            return isListTheSame(entry.getValue());
+    public boolean isFinalState(State state) {
+        if (state.hashCode() == result) {
+            return isListTheSame(state.getFifteenPuzzle());
         }
         return false;
     }
@@ -45,25 +37,6 @@ public class AStar {
         return true;
     }
 
-    public boolean isFinalState(State state){
-        if(state.hashCode() == result){
-            return isListTheSame(state.getFifteenPuzzle());
-        }
-        return false;
-    }
-
-    // funkcja heurystyczna
-    public int checkValuesAreOnWrongPosition(List<Integer> list) {
-        int wrongPositionValues = 0;
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i) == 0) continue; // jesli 0 to nie sprawdzaj
-            if (list.get(i) != i + 1) {  // jesli nie na swoim miejscu
-                wrongPositionValues++;
-            }
-        }
-        return wrongPositionValues;
-    }
-
     public List<State> getNeighbors(State state) {
         List<State> states = new ArrayList<>();
         Operator.stream().forEach(e -> {
@@ -72,8 +45,12 @@ public class AStar {
         return states;
     }
 
+    public boolean compute(State state, String method) {
+        if(!method.equals("hamm") && !method.equals("manh")){
+            System.out.println("Provided wrong method");
+            return false;
+        }
 
-    public boolean compute(State state) {
         if (isFinalState(state)) {
             System.out.println(state);
             return true;
@@ -81,19 +58,22 @@ public class AStar {
 
         state.setDeep(0);
         openedList.add(state);
-        openedSet.add(state.hashCode());
+        openedSet.add(state);
 
         while (!openedList.isEmpty()) {
 
-            Collections.sort(openedList);
+            if(method.equals("manh")){
+                openedList.sort(new ManhattanComparator());
+            }
+            if(method.equals("hamm"))  {
+                openedList.sort(new HammingComparator());
+            }
             State stateFromOpenList = openedList.get(0);
 
-
             openedList.remove(0);
-            openedSet.remove(stateFromOpenList.hashCode());
+            openedSet.remove(stateFromOpenList);
 
-            closedList.add(stateFromOpenList);
-            closedSet.add(stateFromOpenList.hashCode());
+            closedSet.add(stateFromOpenList);
 
             List<State> neighbors = getNeighbors(stateFromOpenList);
 
@@ -102,11 +82,11 @@ public class AStar {
                     System.out.println(neighbor);
                     return true;
                 }
-                if (openedSet.contains(neighbor.hashCode()) || closedSet.contains(neighbor.hashCode())) {
+                if (openedSet.contains(neighbor) || closedSet.contains(neighbor)) {
                     continue;
                 }
                 openedList.add(neighbor);
-                openedSet.add(neighbor.hashCode());
+                openedSet.add(neighbor);
             }
         }
         System.out.println("Failure");
