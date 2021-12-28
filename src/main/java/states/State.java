@@ -1,56 +1,38 @@
 package states;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
 
 @Getter
 @Setter
-@NoArgsConstructor
 public class State implements Comparable<State> {
     private ArrayList<Integer> fifteenPuzzle;
+    private final int rows;
+    private final int columns;
     private State parent;
     private Operator operator;
     private int wrongPositions;
     private int deep;
 
-    public State(ArrayList<Integer> fifteenPuzzle) {
+    public State(ArrayList<Integer> fifteenPuzzle, int rows, int columns) {
+        validation(fifteenPuzzle, rows, columns);
         this.fifteenPuzzle = fifteenPuzzle;
+        this.rows = rows;
+        this.columns = columns;
         this.wrongPositions = checkValuesAreOnWrongPosition();
     }
 
-    private int checkValuesAreOnWrongPosition() {
-        int wrongPositionValues = 0;
-        for (int i = 0; i < fifteenPuzzle.size(); i++) {
-            if (fifteenPuzzle.get(i) == 0) continue; // jesli 0 to nie sprawdzaj
-            if (fifteenPuzzle.get(i) != i + 1) {  // jesli nie na swoim miejscu
-                wrongPositionValues++;
-            }
+    private void validation(ArrayList<Integer> fifteenPuzzle, int rows, int columns) {
+        int correctListSize = rows * columns;
+        if(fifteenPuzzle.size() != correctListSize){
+            throw new RuntimeException("The length of the list is incorrect");
         }
-        return wrongPositionValues;
     }
 
     public int manhattan() {
-       return checkValuesDistance() + wrongPositions + deep;
-    }
-
-    private int checkValuesDistance() {
-        int distance = 0;
-        for (int i = 0; i < fifteenPuzzle.size(); i++) {
-            if (fifteenPuzzle.get(i) == 0) continue;
-            if (fifteenPuzzle.get(i) != i + 1) {
-                int value = fifteenPuzzle.get(i) - 1;
-                int currentColumn = i % 4;
-                int currentRow = i / 4;
-                int correctColumnPos = value % 4;
-                int correctRowPos = value / 4;
-                distance += (Math.abs(currentColumn - correctColumnPos))
-                        + (Math.abs(currentRow - correctRowPos));
-            }
-        }
-        return distance;
+        return checkValuesDistance() + wrongPositions + deep;
     }
 
     @Override
@@ -71,5 +53,33 @@ public class State implements Comparable<State> {
     @Override
     public int compareTo(State other) {
         return Integer.compare(this.wrongPositions + this.deep, other.wrongPositions + other.deep);
+    }
+
+    private int checkValuesDistance() {
+        int distance = 0;
+        for (int i = 0; i < fifteenPuzzle.size(); i++) {
+            if (fifteenPuzzle.get(i) == 0) continue;
+            if (fifteenPuzzle.get(i) != i + 1) {
+                int value = fifteenPuzzle.get(i) - 1;
+                int currentColumn = i % columns;
+                int currentRow = i / rows;
+                int correctColumnPos = value % columns;
+                int correctRowPos = value / rows;
+                distance += (Math.abs(currentColumn - correctColumnPos))
+                        + (Math.abs(currentRow - correctRowPos));
+            }
+        }
+        return distance;
+    }
+
+    private int checkValuesAreOnWrongPosition() {
+        int wrongPositionValues = 0;
+        for (int i = 0; i < fifteenPuzzle.size(); i++) {
+            if (fifteenPuzzle.get(i) == 0) continue; // jesli 0 to nie sprawdzaj
+            if (fifteenPuzzle.get(i) != i + 1) {  // jesli nie na swoim miejscu
+                wrongPositionValues++;
+            }
+        }
+        return wrongPositionValues;
     }
 }

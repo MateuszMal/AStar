@@ -18,13 +18,15 @@ public class Move {
     }
 
     public static Optional<State> moveZero(State state, Operator operator) {
+        int columns = state.getColumns();
+        int rows = state.getRows() - 1;
         Integer step;
         ArrayList<Integer> fifteenPuzzle = new ArrayList<>(state.getFifteenPuzzle());
         zeroPos = findZero(fifteenPuzzle);
         switch (operator) {
             case L -> {
                 step = 1;
-                if (zeroPos != null && zeroPos % 4 != 0) {
+                if (zeroPos != null && zeroPos % columns != 0) {
                     Integer temp = fifteenPuzzle.get(zeroPos - step);
                     fifteenPuzzle.set(zeroPos - step, 0);
                     fifteenPuzzle.set(zeroPos, temp);
@@ -33,7 +35,7 @@ public class Move {
             }
             case R -> {
                 step = 1;
-                if (zeroPos != null && zeroPos % 4 != 3) {
+                if (zeroPos != null && zeroPos % columns != columns - 1) {
                     Integer temp = fifteenPuzzle.get(zeroPos + step);
                     fifteenPuzzle.set(zeroPos + step, 0);
                     fifteenPuzzle.set(zeroPos, temp);
@@ -42,7 +44,7 @@ public class Move {
             }
             case U -> {
                 step = 4;
-                if (zeroPos != null && zeroPos > 3) {
+                if (zeroPos != null && zeroPos > rows) {
                     Integer temp = fifteenPuzzle.get(zeroPos - step);
                     fifteenPuzzle.set(zeroPos - step, 0);
                     fifteenPuzzle.set(zeroPos, temp);
@@ -51,7 +53,7 @@ public class Move {
             }
             case D -> {
                 step = 4;
-                if (zeroPos != null && zeroPos < 12) {
+                if (zeroPos != null && zeroPos < (rows * columns)) {
                     Integer temp = fifteenPuzzle.get(zeroPos + step);
                     fifteenPuzzle.set(zeroPos + step, 0);
                     fifteenPuzzle.set(zeroPos, temp);
@@ -63,7 +65,9 @@ public class Move {
     }
 
     private static State getState(State state, Operator operator, ArrayList<Integer> fifteenPuzzle) {
-        State newState = new State(fifteenPuzzle);
+        int columns = state.getColumns();
+        int rows = state.getRows();
+        State newState = new State(fifteenPuzzle, rows, columns);
         newState.setOperator(operator);
         newState.setParent(state);
         newState.setDeep(state.getDeep() + 1);
